@@ -7,7 +7,8 @@ channel.queue_declare(queue='clj2py')
 
 
 def callback(ch, method, properties, body):
-    print("Python Received %r" % body)
+    mess = "Python Received %r" % body
+    print(mess)
     channel.basic_publish(exchange='', routing_key='py2clj', body='Hello from Python!')
     print(" Python sent 'Hello from Python!'")
  

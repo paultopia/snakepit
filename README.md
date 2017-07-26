@@ -18,6 +18,7 @@ You should see Clojure send a message to Python which will print on the Python t
 
 6.  To cleanly shut down, control-c out of the python terminal, and run `/usr/local/sbin/rabbitmqctl stop` to [get rabbitmq to shut down](https://stackoverflow.com/questions/20615765/how-to-stop-rabbitmq-servers) --- keyboard interrupts won't do the trick for the last one. Clojure will shut itself down.
 
+You can also just use the shell script talk.sh that will handle the details for you.
 
 Created using the basic leiningen app template, mostly following [this tutorial on the Clojure-side](http://clojurerabbitmq.info/articles/getting_started.html) and [this tutorial on the Python-side](https://www.rabbitmq.com/tutorials/tutorial-one-python.html), so, like, almost none of the code is actually mine, but any residual rights that I may have in, I dunno, the act of putting the two tutorials together or something, is hereby committed to the public domain. 
 
