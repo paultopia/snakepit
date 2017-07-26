@@ -10,7 +10,7 @@ def callback(ch, method, properties, body):
     print("Python Received %r" % body)
     channel.basic_publish(exchange='', routing_key='py2clj', body='Hello from Python!')
     print(" Python sent 'Hello from Python!'")
-
+ 
 channel.basic_consume(callback,
                       queue='clj2py',
                       no_ack=True)

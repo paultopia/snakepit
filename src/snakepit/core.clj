@@ -17,8 +17,7 @@
                    (String. payload "UTF-8") delivery-tag content-type type)))
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
+  []
   (do
     (println (format "Clojure Connected. Channel id: %d" (.getChannelNumber ch)))
     (lc/subscribe ch "py2clj" message-handler {:auto-ack true}) 
