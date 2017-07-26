@@ -16,6 +16,9 @@ To run on your machine:
 
 You should see Clojure send a message to Python which will print on the Python terminal, and then see Python send a reply to Clojure which will print on the Clojure terminal.
 
+6.  To cleanly shut down, control-c out of the python terminal, and run `/usr/local/sbin/rabbitmqctl stop` to [get rabbitmq to shut down](https://stackoverflow.com/questions/20615765/how-to-stop-rabbitmq-servers) --- keyboard interrupts won't do the trick for the last one. Clojure will shut itself down.
+
+
 Created using the basic leiningen app template, mostly following [this tutorial on the Clojure-side](http://clojurerabbitmq.info/articles/getting_started.html) and [this tutorial on the Python-side](https://www.rabbitmq.com/tutorials/tutorial-one-python.html), so, like, almost none of the code is actually mine, but any residual rights that I may have in, I dunno, the act of putting the two tutorials together or something, is hereby committed to the public domain. 
 
 Other useful info: [this github issue](https://github.com/MassTransit/MassTransit/issues/370) explains why the default needs to be changed on the clojure-side to `:auto-delete false`. And [this](https://www.cloudamqp.com/blog/2015-05-18-part1-rabbitmq-for-beginners-what-is-rabbitmq.html) is a very nice general explainer for how rabbitmq works. I also looked at [this](http://bernhardwenzel.com/articles/how-to-build-a-message-driven-microservice-application/), though didn't get too much from it.
