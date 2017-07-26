@@ -56,6 +56,6 @@
   [& args]
   (cond
     (some #{"json"} args)
-      (println "not implemented")
+    (json-comm)
     :else
-    (json-comm)))
+    (basic-comm)))

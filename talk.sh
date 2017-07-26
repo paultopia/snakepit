@@ -5,6 +5,11 @@ sleep 5
 python talktoclojure.py &
 PYPID=$!
 sleep 2
-lein run
+
+if [[ "$@" == 'json' ]]; then
+	lein run json
+else
+	lein run
+fi
 kill $PYPID
 /usr/local/sbin/rabbitmqctl stop
