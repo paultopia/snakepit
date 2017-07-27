@@ -5,7 +5,8 @@
             :url "https://creativecommons.org/share-your-work/public-domain/cc0/"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [com.novemberain/langohr "3.6.1"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [org.clojure/core.async "0.3.443"]]
   :main ^:skip-aot snakepit.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

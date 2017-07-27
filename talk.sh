@@ -8,6 +8,8 @@ sleep 2
 
 if [[ "$@" == 'json' ]]; then
 	lein run json
+elif [[ "$@" == 'async' ]]; then
+	lein run async
 else
 	lein run
 fi

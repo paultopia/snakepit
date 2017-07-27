@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [snakepit.json :refer [json-comm]]
             [snakepit.basic :refer [basic-comm]]
+            [snakepit.async :refer [async-comm]]
             [langohr.core      :as rmq]
             [langohr.channel   :as lch]
             [langohr.queue     :as lq]
@@ -10,7 +11,7 @@
 
 
 
-(defn sync-shutdown [channel connection]
+(defn shutdown [channel connection]
   (Thread/sleep 5000) ;; wait for messages to finish.
   (println "Clojure Disconnecting...")
   (rmq/close channel)
@@ -23,6 +24,8 @@
     (cond
       (some #{"json"} args)
       (json-comm ch)
+      (some #{"async"} args)
+      (async-comm ch)
       :else
       (basic-comm ch))
-    (sync-shutdown ch conn)))
+    (shutdown ch conn)))
