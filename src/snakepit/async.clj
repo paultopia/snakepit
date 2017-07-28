@@ -9,9 +9,9 @@
             [clojure.core.async
              :refer [>! <! >!! <!! go chan thread go-loop]]))
 
-(defn say [async-channel message]
+(defn say [outqueue async-channel message]
   (go
-    (>! async-channel message)))
+    (>! async-channel {:queue outqueue :content message})))
 
 (defn dispatch-messages! [mq-channel async-channel]
   (go-loop []
@@ -35,12 +35,11 @@
       (let [message (<!! async-channel)]
         (processor message))
       (recur))))
-;; should this be a plain loop in a thread that blocks, i.e. <!! rather than <! and thread not go?  or should it be go-loop?
 
 (defn setup-async-comm [mq-channel, inqueue, outqueue]
   (let [receiver-async-chan (chan)
         sender-async-chan (chan)
-        sender-func (partial say sender-async-chan)
+        sender-func (partial say outqueue sender-async-chan)
         receiver-func (partial process-messages! receiver-async-chan)]
     (dispatch-messages! mq-channel sender-async-chan)
     (lq/declare mq-channel inqueue {:exclusive false :auto-delete false})
@@ -55,5 +54,5 @@
 
 (defn async-comm [mq-channel]
   (let [{:keys [send! receive!]} (setup-async-comm mq-channel "jsonpy2clj" "jsonclj2py")]
-    (send! {:queue "jsonclj2py" :content [9, 10, 11]})
+    (send! [9, 10, 11])
     (receive! answer)))
