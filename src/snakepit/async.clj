@@ -7,8 +7,7 @@
             [langohr.basic     :as lb]
             [clojure.data.json :as json]
             [clojure.core.async
-             :refer [>! <! >!! <!! go chan buffer close! thread
-                     alts! alts!! timeout go-loop]]))
+             :refer [>! <! >!! <!! go chan thread go-loop]]))
 
 (defn say [async-channel message]
   (go
@@ -17,7 +16,7 @@
 (defn dispatch-messages! [mq-channel async-channel]
   (go-loop []
     (let [{:keys [queue content]} (<! async-channel)]
-      (lb/publish mq-channel "" queue content {:content-type "text/plain"}))
+      (lb/publish mq-channel "" queue (json/write-str content) {:content-type "application/json"}))
     (recur)))
 
 (defn answer [msg]
@@ -35,10 +34,11 @@
     (lc/subscribe mq-channel queue handler {:auto-ack true})))
 
 (defn process-messages! [async-channel processor]
-  (go-loop []
-    (let [message (<! async-channel)]
-      (processor message))
-    (recur)))
+  (thread
+    (loop []
+      (let [message (<!! async-channel)]
+        (processor message))
+      (recur))))
 ;; should this be a plain loop in a thread that blocks, i.e. <!! rather than <! and thread not go?  or should it be go-loop?
 
 (defn async-comm [mq-channel]
@@ -51,4 +51,4 @@
     (println "Clojure Connected.")
     (listen! receiver-async-chan mq-channel "jsonpy2clj")
     (process-messages! receiver-async-chan answer)
-    (send! {:queue "jsonclj2py" :content (json/write-str [9, 10, 11])})))
+    (send! {:queue "jsonclj2py" :content [9, 10, 11]})))
