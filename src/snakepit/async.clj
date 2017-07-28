@@ -19,10 +19,6 @@
       (lb/publish mq-channel "" queue (json/write-str content) {:content-type "application/json"}))
     (recur)))
 
-(defn answer [msg]
-  (println "Clojure takes your Python and doubles it. "
-           (mapv #(* 2 %) msg)))
-
 (defn message-receiver
   [async-channel mq-channel metadata ^bytes payload]
   (let [message (json/read-str (String. payload "UTF-8"))]
@@ -41,14 +37,23 @@
       (recur))))
 ;; should this be a plain loop in a thread that blocks, i.e. <!! rather than <! and thread not go?  or should it be go-loop?
 
-(defn async-comm [mq-channel]
+(defn setup-async-comm [mq-channel, inqueue, outqueue]
   (let [receiver-async-chan (chan)
         sender-async-chan (chan)
-        send! (partial say sender-async-chan)]
+        sender-func (partial say sender-async-chan)
+        receiver-func (partial process-messages! receiver-async-chan)]
     (dispatch-messages! mq-channel sender-async-chan)
-    (lq/declare mq-channel "jsonpy2clj" {:exclusive false :auto-delete false})
-    (lq/declare mq-channel "jsonclj2py" {:exclusive false :auto-delete false})
+    (lq/declare mq-channel inqueue {:exclusive false :auto-delete false})
+    (lq/declare mq-channel outqueue {:exclusive false :auto-delete false})
     (println "Clojure Connected.")
-    (listen! receiver-async-chan mq-channel "jsonpy2clj")
-    (process-messages! receiver-async-chan answer)
-    (send! {:queue "jsonclj2py" :content [9, 10, 11]})))
+    (listen! receiver-async-chan mq-channel inqueue)
+    {:send! sender-func :receive! receiver-func}))
+
+(defn answer [msg]
+  (println "Clojure takes your Python and doubles it. "
+           (mapv #(* 2 %) msg)))
+
+(defn async-comm [mq-channel]
+  (let [{:keys [send! receive!]} (setup-async-comm mq-channel "jsonpy2clj" "jsonclj2py")]
+    (send! {:queue "jsonclj2py" :content [9, 10, 11]})
+    (receive! answer)))
